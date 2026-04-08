@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Employee Attrition Intelligence</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+h1 {
+    text-align: center;
+    color: #1f2937;
+    margin-bottom: 25px;
+}
+
+fieldset {
+    border: none;
+    margin-bottom: 30px;
+}
+
+legend {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #2563eb;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* RESULT */
+.outcome {
+    margin-top: 40px;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.outcome-left {
+    background: #fff5f5;
+    border-left: 6px solid #ef4444;
+}
+
+.outcome-stayed {
+    background: #f0fdf4;
+    border-left: 6px solid #22c55e;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>Employee Attrition Intelligence</h1>
+
+<form method="POST">
+{% csrf_token %}
+
+<!-- MODEL -->
+<fieldset>
+<legend>Prediction Model</legend>
+<select name="model" required>
+    <option value="xgboost">XGBoost (Recommended)</option>
+    <option value="random_forest">Random Forest</option>
+    <option value="lightgbm">LightGBM</option>
+    <option value="decision_tree">Decision Tree</option>
+</select>
+</fieldset>
+
+<!-- BASIC -->
+<fieldset>
+<legend>Basic Information</legend>
+<div class="grid">
+    <div>
+        <label>Age</label>
+        <input type="number" name="age" min="18" required>
+    </div>
+    <div>
+        <label>Gender</label>
+        <select name="gender_male" required>
+            <option value="1">Male</option>
+            <option value="0">Female</option>
+        </select>
+    </div>
+    <div>
+        <label>Years at Company</label>
+        <input type="number" name="years_at_company" min="0" required>
+    </div>
+</div>
+</fieldset>
+
+<!-- JOB -->
+<fieldset>
+<legend>Job & Compensation</legend>
+<div class="grid">
+    <div>
+        <label>Monthly Income</label>
+        <input type="number" name="monthly_income" min="0" required>
+    </div>
+    <div>
+        <label>Job Level</label>
+        <select name="job_level" required>
+            <option value="1">Entry</option>
+            <option value="1">Junior</option>
+            <option value="2">Mid</option>
+            <option value="3">Senior</option>
+            
+        </select>
+    </div>
+    <div>
+        <label>Number of Promotions</label>
+        <input type="number" name="num_promotions" min="0" required>
+    </div>
+</div>
+</fieldset>
+
+<!-- WORK CONDITIONS -->
+<fieldset>
+<legend>Work Conditions</legend>
+<div class="grid">
+    <div>
+        <label>Overtime</label>
+        <select name="overtime">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select>
+    </div>
+    <div>
+        <label>Remote Work</label>
+        <select name="remote_work">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select>
+    </div>
+    <div>
+        <label>Distance from Home (KM)</label>
+        <input type="number" name="distance_from_home" min="0" required>
+    </div>
+</div>
+</fieldset>
+
+<!-- EMPLOYMENT -->
+<fieldset>
+<legend>Employment Details</legend>
+<div class="grid">
+    <div>
+        <label>Company Tenure (Years)</label>
+        <input type="number" name="company_tenure" min="0" required>
+    </div>
+    <div>
+        <label>Number of Dependents</label>
+        <input type="number" name="num_dependents" min="0" required>
+    </div>
+</div>
+</fieldset>
+
+<!-- DEMOGRAPHICS -->
+<fieldset>
+<legend>Demographics</legend>
+<div class="grid">
+    <div>
+        <label>Education Level</label>
+        <select name="education_level">
+            <option value="1">High School</option>
+            <option value="2">Bachelor's</option>
+            <option value="2">Associate Degree</option>
+            <option value="3">Master's</option>
+            <option value="4">PhD</option>
+            
+        </select>
+    </div>
+    <div>
+        <label>Marital Status</label>
+        <select name="marital_status">
+            <option value="married">Married</option>
+            <option value="single">Single</option>
+            <option value="other">Other</option>
+        </select>
+    </div>
+    <div>
+        <label>Company Size</label>
+        <select name="company_size">
+            <option value="large">Large</option>
+            <option value="medium">Medium</option>
+            <option value="small">Small</option>
+        </select>
+    </div>
+</div>
+</fieldset>
+
+<!-- SATISFACTION & PERFORMANCE -->
+<fieldset>
+<legend>Satisfaction & Performance</legend>
+
+<div class="grid">
+    <div>
+        <label>Work-Life Balance</label>
+        <select name="work_life_balance" required>
+            <option value="1">Poor</option>
+            <option value="2">Good</option>
+            <option value="3">Excellent</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Job Satisfaction</label>
+        <select name="job_satisfaction" required>
+            <option value="1">Low</option>
+            <option value="2">High</option>
+            <option value="3">Very High</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Performance Rating</label>
+        <select name="performance_rating" required>
+            <option value="1">Average</option>
+            <option value="2">Good</option>
+            <option value="3">Excellent</option>
+        </select>
+    </div>
+</div>
+
+</fieldset>
+
+<!-- JOB ROLE -->
+<fieldset>
+<legend>Job Role</legend>
+<select name="job_role">
+    <option value="finance">Finance</option>
+    <option value="healthcare">Healthcare</option>
+    <option value="media">Media</option>
+    <option value="technology">Technology</option>
+    <option value="other">Other</option>
+</select>
+
+<div>
+    <label>Leadership Opportunities</label>
+    <select name="leadership_opportunities" required>
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+    </select>
+</div>
+
+<div>
+    <label>Innovation Opportunities</label>
+    <select name="innovation_opportunities" required>
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+    </select>
+</div>
+
+</fieldset>
+
+
+
+<!-- COMPANY CULTURE -->
+<fieldset>
+<legend>Company Culture</legend>
+
+<div class="grid">
+    <div>
+        <label>Company Reputation</label>
+        <select name="company_reputation" required>
+            <option value="1">Poor</option>
+            <option value="2">Good</option>
+            <option value="3">Excellent</option>
+        </select>
+    </div>
+</div>
+
+
+<div>
+    <label>Employee Recognition</label>
+    <select name="employee_recognition" required>
+        <option value="1">Low</option>
+        <option value="2">Medium</option>
+        <option value="3">High</option>
+    </select>
+</div>
+
+</fieldset>
+
+
+<button type="submit">Run Attrition Prediction</button>
+</form>
+
+{% if predicted != None %}
+<div class="outcome {% if predicted == 1 %}outcome-left{% else %}outcome-stayed{% endif %}">
+    <h3>
+        {% if predicted == 1 %}
+            Predicted Outcome: Employee LEFT
+        {% else %}
+            Predicted Outcome: Employee STAYED
+        {% endif %}
+    </h3>
+    <p><strong>Probability:</strong> {{ probability }}%</p>
+    <p><strong>Model Used:</strong> {{ model_name }}</p>
+</div>
+{% endif %}
+
+</div>
+</body>
+</html>
