@@ -19,7 +19,7 @@ def intval(request, key, default=0):
 BASE_DIR = settings.BASE_DIR
 
 MODELS = {
-    "xgboost": joblib.load(os.path.join(BASE_DIR, "xgboost_model.joblib")),
+    "famenet": joblib.load(os.path.join(BASE_DIR, "xgboost_model.joblib")),
     "random_forest": joblib.load(os.path.join(BASE_DIR, "random_forest_model.joblib")),
     "lightgbm": joblib.load(os.path.join(BASE_DIR, "lightgbm_model.joblib")),
     "decision_tree": joblib.load(os.path.join(BASE_DIR, "decision_tree_model.joblib")),
@@ -32,7 +32,7 @@ def index(request):
     if request.method == "POST":
 
         # ---------- MODEL ----------
-        model_key = request.POST.get("model", "xgboost")
+        model_key = request.POST.get("model", "famenet")
         model = MODELS.get(model_key)
 
         # ---------- BASIC / NUMERIC ----------
